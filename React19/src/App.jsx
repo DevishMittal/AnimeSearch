@@ -11,19 +11,23 @@ import './App.css'
 // }
 
 //new way
-const Card = () => {
+const Card = ({ title }) => {
     return (
     <div>
-    <h2>Card Component</h2>
+    <h2>{title}</h2>
+
+        <button onClick={() => {setHasLiked(true)}}></button>
     </div>
     )
     }
 
 const App = () => {
+    const [hasLiked,setHasLiked ]  = useState(false);
     return (
-        <div>
-        <Card />
-        <h2>Hi</h2>
+        <div className="card-container">
+        <Card title={"Hello"}/>
+            <Card title={"Vite"}/>
+            <Card title={"kahnnd"}/>
         </div>
             )
 }
