@@ -1,42 +1,23 @@
-import {useEffect, useState} from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-//traditional class components
-// class classnames extends React.Component {
-//     render () {
-//         return <h2>Class Components</h2>
-//     }
-// }
-
-//new way
-const Card = ({title}) => {
-    useEffect(() => {
-        console.log(`${title} got ${hasLiked}`)
-    })
-    const [hasLiked, setHasLiked] = useState(false);
-    const [count, setCount] = useState(0);
-    return (
-        <div className="card" onClick={() => setCount(count + 1)}>
-            <h2>{title}</h2>
-
-            <button onClick={() => {
-                setHasLiked(!hasLiked)
-            }}> {hasLiked ? '❤️' : '🤍'} </button>
-        </div>
-    )
-}
+import React, {useState} from 'react'
+import Search from "./components/Search.jsx";
 
 const App = () => {
-
+    const [searchTerm, setSearchTerm] = useState('')
     return (
-        <div className="card-container">
-            <Card title={"Demon Slayer"}/>
-            <Card title={"Attack On Titan"}/>
-            <Card title={"Your lie in April"}/>
-        </div>
+        <main>
+            <div className="pattern">
+                <div className="wrapper">
+                    <header>
+                        <img src="./hero.png" alt="Hero Banner" />
+                        <h1>
+                            Find The right <span className="text-gradient">Anime </span>for you
+                        </h1>
+                    </header>
+                    <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+                    <h1 className="text-white"></h1>
+                </div>
+            </div>
+        </main>
     )
 }
-
 export default App
