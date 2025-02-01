@@ -3,6 +3,7 @@ import Search from "./components/Search.jsx";
 import Spinner from "./components/Spinner.jsx";
 import MovieCard from "./components/MovieCard.jsx";
 import {useDebounce} from 'react-use';
+import {getTrendingAnime, updateSearchCount} from "./appwrite.js";
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -19,10 +20,11 @@ const App = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [animeList, setAnimeList] = useState([]);
+    const [trendingAnime, setTrendingAnime] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [debounceSearchTerm, setDebounceSearchTerm] = useState('');
 
-    useDebounce(()=> setDebounceSearchTerm(searchTerm), 500,[searchTerm]);
+    useDebounce(()=> setDebounceSearchTerm(searchTerm), 750,[searchTerm]);
 
     const fetchAnime = async (query = '') => {
         setIsLoading(true);
@@ -38,6 +40,11 @@ const App = () => {
 
             const data = await response.json();
             setAnimeList(data.results || []);
+
+            if(query &&data.results.length > 0) {
+                await updateSearchCount(query, data.results[0]);
+            }
+
         } catch (err) {
             console.error(`Error fetching anime: ${err}`);
             setErrorMessage('Error fetching anime. Please try again.');
@@ -46,9 +53,22 @@ const App = () => {
         }
     }
 
+    const loadTrendingAnime = async () => {
+        try{
+    const anime = await getTrendingAnime();
+
+        setTrendingAnime(anime);
+        }catch(error){
+            console.error(`Error fetching trending anime ${error}`);
+        }
+    }
     useEffect(() => {
         fetchAnime(debounceSearchTerm);
     }, [debounceSearchTerm]);
+
+    useEffect(() => {
+        loadTrendingAnime();
+    },[]);
 
     return (
         <main>
@@ -61,8 +81,22 @@ const App = () => {
                         </h1>
                         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                     </header>
+                    {trendingAnime.length > 0 && (
+                        <section className="trending">
+                            <h2>Trending Anime</h2>
+
+                            <ul>{trendingAnime.map((anime, index) => (
+
+                           <li key={anime.$id}>
+                               <p>{index + 1}</p>
+                               <img src={anime.poster_url} alt={anime.name} />
+                           </li> ))
+
+                            }</ul>
+                        </section>
+                    )}
                     <section className="all-movies">
-                        <h2 className="mt-[40px]">All Anime</h2>
+                        <h2 >All Anime</h2>
                         {isLoading ? (
                             <Spinner />
                         ) : errorMessage ? (
