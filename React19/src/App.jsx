@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Search from "./components/Search.jsx";
 import Spinner from "./components/Spinner.jsx";
+import MovieCard from "./components/MovieCard.jsx";
+import {useDebounce} from 'react-use';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -18,12 +20,16 @@ const App = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [animeList, setAnimeList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [debounceSearchTerm, setDebounceSearchTerm] = useState('');
 
-    const fetchAnime = async () => {
+    useDebounce(()=> setDebounceSearchTerm(searchTerm), 500,[searchTerm]);
+
+    const fetchAnime = async (query = '') => {
         setIsLoading(true);
         setErrorMessage('');
         try {
-            const endpoint = `${API_BASE_URL}/discover/tv?include_adult=true&include_null_first_air_dates=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=16&with_origin_country=JP&with_original_language=ja&api_key=${API_KEY}`;
+            const endpoint = query ? `${API_BASE_URL}/search/tv?query=${encodeURIComponent(query)}&api_key=${API_KEY}`
+           : `${API_BASE_URL}/discover/tv?include_adult=true&include_null_first_air_dates=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=16&with_origin_country=JP&with_original_language=ja&api_key=${API_KEY}`;
             const response = await fetch(endpoint, API_OPTIONS);
 
             if (!response.ok) {
@@ -41,8 +47,8 @@ const App = () => {
     }
 
     useEffect(() => {
-        fetchAnime();
-    }, []);
+        fetchAnime(debounceSearchTerm);
+    }, [debounceSearchTerm]);
 
     return (
         <main>
@@ -64,7 +70,7 @@ const App = () => {
                         ) : (
                             <ul>
                                 {animeList.map((anime) => (
-                                    <p key={anime.id} className="text-white">{anime.name}</p>
+                                   <MovieCard key={anime.id} anime={anime} />
                                 ))}
                             </ul>
                         )}
