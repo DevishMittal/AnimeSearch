@@ -30,7 +30,7 @@ const App = () => {
         setIsLoading(true);
         setErrorMessage('');
         try {
-            const endpoint = query ? `${API_BASE_URL}/search/tv?query=${encodeURIComponent(query)}&api_key=${API_KEY}`
+            const endpoint = query ? `${API_BASE_URL}/search/tv?query=${encodeURIComponent(query)}&api_key=${API_KEY}&with_origin_country=JP`
            : `${API_BASE_URL}/discover/tv?include_adult=true&include_null_first_air_dates=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=16&with_origin_country=JP&with_original_language=ja&api_key=${API_KEY}`;
             const response = await fetch(endpoint, API_OPTIONS);
 
@@ -39,10 +39,14 @@ const App = () => {
             }
 
             const data = await response.json();
-            setAnimeList(data.results || []);
 
-            if(query &&data.results.length > 0) {
-                await updateSearchCount(query, data.results[0]);
+            const filteredResults = data.results.filter(anime =>
+            anime.origin_country && anime.origin_country.includes("JP"));
+
+            setAnimeList(filteredResults || []);
+
+            if(query &&filteredResults > 0) {
+                await updateSearchCount(query,filteredResults[0]);
             }
 
         } catch (err) {
