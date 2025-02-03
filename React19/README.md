@@ -1,8 +1,13 @@
-# React + Vite
+# AnimeSearch
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AnimeSearch is a React application that allows users to search for their favorite anime shows using the TMDB API. 
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Search for anime by title
+
+## Upcoming Features
+- View detailed information about each anime
+- Save favorite anime to a personal list
+
+
