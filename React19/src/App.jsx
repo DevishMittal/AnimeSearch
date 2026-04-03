@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home.jsx';
+import AnimeDetails from './pages/AnimeDetails.jsx';
 
 // Basic Navbar for now
 const Navbar = () => {
@@ -24,7 +25,7 @@ const App = () => {
             <div className="pt-20"> {/* Padding to account for absolute nav */}
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    {/* Future routes will be added here */}
+                    <Route path="/anime/:id" element={<AnimeDetails />} />
                 </Routes>
             </div>
         </Router>
