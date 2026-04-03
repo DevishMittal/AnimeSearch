@@ -16,7 +16,7 @@ const API_OPTIONS = {
     }
 }
 
-const App = () => {
+const Home = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [animeList, setAnimeList] = useState([]);
@@ -45,7 +45,7 @@ const App = () => {
 
             setAnimeList(filteredResults || []);
 
-            if(query &&filteredResults > 0) {
+            if(query && filteredResults.length > 0) {
                 await updateSearchCount(query,filteredResults[0]);
             }
 
@@ -119,4 +119,4 @@ const App = () => {
     );
 }
 
-export default App;
+export default Home;
