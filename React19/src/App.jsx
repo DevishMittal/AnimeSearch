@@ -1,122 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import Search from "./components/Search.jsx";
-import Spinner from "./components/Spinner.jsx";
-import MovieCard from "./components/MovieCard.jsx";
-import {useDebounce} from 'react-use';
-import {getTrendingAnime, updateSearchCount} from "./appwrite.js";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Home from './pages/Home.jsx';
 
-const API_BASE_URL = 'https://api.themoviedb.org/3';
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-
-const API_OPTIONS = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${API_KEY}`,
-    }
-}
+// Basic Navbar for now
+const Navbar = () => {
+    return (
+        <nav className="w-full flex justify-between items-center py-4 px-8 border-b border-white/10 glass-nav absolute top-0 z-50">
+            <Link to="/" className="text-2xl font-bold text-white tracking-widest flex items-center gap-2">
+                <span className="text-gradient">Anime</span>Search
+            </Link>
+            <div className="flex gap-6">
+                <Link to="/" className="text-gray-300 hover:text-white transition-colors duration-200 cursor-pointer">Discover</Link>
+                <Link to="/" className="text-gray-300 hover:text-white transition-colors duration-200 cursor-pointer">Login</Link>
+            </div>
+        </nav>
+    );
+};
 
 const App = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [animeList, setAnimeList] = useState([]);
-    const [trendingAnime, setTrendingAnime] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [debounceSearchTerm, setDebounceSearchTerm] = useState('');
-
-    useDebounce(()=> setDebounceSearchTerm(searchTerm), 750,[searchTerm]);
-
-    const fetchAnime = async (query = '') => {
-        setIsLoading(true);
-        setErrorMessage('');
-        try {
-            const endpoint = query ? `${API_BASE_URL}/search/tv?query=${encodeURIComponent(query)}&api_key=${API_KEY}&with_origin_country=JP`
-           : `${API_BASE_URL}/discover/tv?include_adult=true&include_null_first_air_dates=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=16&with_origin_country=JP&with_original_language=ja&api_key=${API_KEY}`;
-            const response = await fetch(endpoint, API_OPTIONS);
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch anime');
-            }
-
-            const data = await response.json();
-
-            const filteredResults = data.results.filter(anime =>
-            anime.origin_country && anime.origin_country.includes("JP"));
-
-            setAnimeList(filteredResults || []);
-
-            if(query &&filteredResults > 0) {
-                await updateSearchCount(query,filteredResults[0]);
-            }
-
-        } catch (err) {
-            console.error(`Error fetching anime: ${err}`);
-            setErrorMessage('Error fetching anime. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    const loadTrendingAnime = async () => {
-        try{
-    const anime = await getTrendingAnime();
-
-        setTrendingAnime(anime);
-        }catch(error){
-            console.error(`Error fetching trending anime ${error}`);
-        }
-    }
-    useEffect(() => {
-        fetchAnime(debounceSearchTerm);
-    }, [debounceSearchTerm]);
-
-    useEffect(() => {
-        loadTrendingAnime();
-    },[]);
-
     return (
-        <main>
-            <div className="pattern">
-                <div className="wrapper">
-                    <header>
-                        <img src={"./hero.png"} alt="Hero Banner" />
-                        <h1>
-                            Find The right <span className="text-gradient">Anime </span>for you
-                        </h1>
-                        <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-                    </header>
-                    {trendingAnime.length > 0 && (
-                        <section className="trending">
-                            <h2>Trending Anime</h2>
-
-                            <ul>{trendingAnime.map((anime, index) => (
-
-                           <li key={anime.$id}>
-                               <p>{index + 1}</p>
-                               <img src={anime.poster_url} alt={anime.name} />
-                           </li> ))
-
-                            }</ul>
-                        </section>
-                    )}
-                    <section className="all-movies">
-                        <h2 >All Anime</h2>
-                        {isLoading ? (
-                            <Spinner />
-                        ) : errorMessage ? (
-                            <p className="text-red-500">{errorMessage}</p>
-                        ) : (
-                            <ul>
-                                {animeList.map((anime) => (
-                                   <MovieCard key={anime.id} anime={anime} />
-                                ))}
-                            </ul>
-                        )}
-                    </section>
-                </div>
+        <Router>
+            <Navbar />
+            <div className="pt-20"> {/* Padding to account for absolute nav */}
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    {/* Future routes will be added here */}
+                </Routes>
             </div>
-        </main>
+        </Router>
     );
-}
+};
 
 export default App;

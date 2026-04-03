@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'framer-motion';
 
 const MovieCard = ({
                        anime:
@@ -8,7 +9,13 @@ const MovieCard = ({
                            }
                    }) => {
     return (
-        <div className="movie-card">
+        <motion.div 
+            className="movie-card"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+        >
             <p key={id} className="text-white">{name}</p>
             <img src={poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : '/no-movie.png'} alt={name}/>
             <div className="mt-4">
@@ -26,7 +33,7 @@ const MovieCard = ({
                     </p>
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 export default MovieCard
